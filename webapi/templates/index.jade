@@ -1,7 +1,44 @@
 extends base
 
-block title Index
+block title 
+	title Index
+append styles
+	link(rel="stylesheet" href="css/main.css")
+	link(rel="stylesheet" href="css/demo.css")
 
 block content
-	h1 hello1
-	h2 heelo11
+	.main
+		.banner
+			.logo
+		.content
+			.column1
+				.user-card.card
+					img.card-img-top(src="image/img_avatar1.png" alt="User Avatar")
+					.card-body
+						h4.card-title User Name
+						p.card-text Class of User
+			.column2.none-select
+				.camera-wrapper.none-select
+					.loading.hide
+						img(src="image/loading.gif" width="50px" height="50px" )
+					video#preview.camera.none-select(autoplay="autoplay")
+					.stage Face Scan
+					.overlay
+					canvas#facetracker.overlap
+					canvas#image_capture.capture
+				.btns.none-select
+					button.none-select.mainbtn.button.white FINISH
+			.column3
+				.item-preview
+					h2 Your Shopping Cart
+				.item-list
+					ul.list-group
+
+				.item-total
+					h3 Your Total: 
+				
+append scripts
+	script(src="js/trackjs/tracking-min.js")
+	script(src="js/trackjs/data/face.js")
+	script(src="js/instascan.min.js")
+	script(src="js/app.js")

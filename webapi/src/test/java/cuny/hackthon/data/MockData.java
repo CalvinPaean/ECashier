@@ -64,7 +64,7 @@ public class MockData {
 	
 	@Test
 	public void testValidFeature() throws IOException {
-		try(FileInputStream fileIn = new FileInputStream("D:\\desktop\\Y1.txt")) {
+		try(FileInputStream fileIn = new FileInputStream("D:\\desktop\\Q2.txt")) {
 			StringWriter writer = new StringWriter();
 			CmdUtils.ioFlow(new InputStreamReader(fileIn), writer);
 			System.out.println(userDao.getUserByFeature(writer.toString()));

@@ -61,7 +61,6 @@ public class Server {
 	}
 	
 	public static void main(String[] args)  {
-		Service.ignite();
 		port(3000);
 		
 //		String projectDir = System.getProperty("user.dir");
@@ -74,6 +73,8 @@ public class Server {
 		
 		get(WebAPI.Path.index, IndexController::WelcomePage);
 		get(WebAPI.Path.SHOW_QRCODE, ProductController::ShowQRCode);
+		get(WebAPI.Path.SHOW_ONE_ITEM, ProductController::FetchItem);
+		get(WebAPI.AuthPath.VERIFY_USER, UserController::VerifyUser);
 		post(WebAPI.AuthPath.newUser, UserController::NewUser);
 		Spark.after("*", (req, res)->{
 			res.header("Content-Encoding", "gzip");

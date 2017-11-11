@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import cuny.hackthon.model.Models.Product;
@@ -24,6 +25,16 @@ public class ProductDAO extends AbstractDAO<Product, Integer> {
 
 	public ProductDAO(DataSource ds) {
 		super(ds);
+	}
+	
+	public Product findByCode(String code) {
+		String sql = String.format("Select * from %s where code = ?", getBeanTableName());
+		logger.debug("SQL: {}, PARAMS: {}", sql, code);
+		try {
+			return runner.query(sql, new BeanHandler<>(Product.class), code);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public Map<Integer, String> fectchQrCode(int... itemsID) {

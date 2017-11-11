@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import cuny.hackthon.model.Models.User;
 import cuny.hackthon.utils.CmdUtils;
@@ -25,12 +26,11 @@ public class UserDAO extends AbstractDAO<User, Integer> {
 		super(ds);
 	}
 	
-	public String[] getFeatures() {
-		String sql = String.format("select feature from %s where id is not null", getBeanTableName());
+	public List<User> getFeatures() {
+		String sql = String.format("select * from %s where feature is not null", getBeanTableName());
 		try {
 			logger.debug("SQL: {}", sql);
-			Object[] result = runner.query(sql, new ArrayHandler());
-			return Arrays.stream(result).map(f->f.toString()).toArray(String[]::new);
+			return runner.query(sql, new BeanListHandler<>(User.class));
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -50,25 +50,27 @@ public class UserDAO extends AbstractDAO<User, Integer> {
 		}
 	}
 	
-	public boolean getUserByFeature(String image) {
+	public User getUserByFeature(String image) {
 		BufferedImage decoded = WebpJNI.getInstance().decodeImage(image, 320, 240);
 		try {
 			File file = File.createTempFile("___fea", "ture__");
 			ImageIO.write(decoded, "jpg", file);
 			String result = windowsShell(String.format("echo %s | anapy face_recog.py 1", file.getAbsolutePath()));
-			String[] features = getFeatures();
+			List<User> features = getFeatures();
 			List<BigDecimal> target = CmdUtils.featuresOutput(result);
-			BigDecimal threshold = new BigDecimal("0.5");
-			for(String feature : features) {
-				List<BigDecimal> candidate = CmdUtils.featuresOutput(feature);
-				if(MathUtils.euclideanDist(target, candidate).compareTo(threshold) < 0) {
-					return true;
+			BigDecimal threshold = new BigDecimal("0.42");
+			for(User user : features) {
+				List<BigDecimal> candidate = CmdUtils.featuresOutput(user.getFeature());
+				BigDecimal dist = MathUtils.euclideanDist(target, candidate);
+				if(dist.compareTo(threshold) < 0) {
+					logger.debug("Dist: {}", dist);
+					return user;
 				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return false;
+		return null;
 	}
 	
 }
