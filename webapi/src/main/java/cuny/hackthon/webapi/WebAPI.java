@@ -1,7 +1,5 @@
 package cuny.hackthon.webapi;
 
-import spark.Route;
-
 public final class WebAPI {
 
 	public final static class Path {

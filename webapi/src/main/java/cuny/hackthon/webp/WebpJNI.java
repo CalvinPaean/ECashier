@@ -95,7 +95,7 @@ public class WebpJNI {
 		try(FileInputStream input = new FileInputStream("D:\\Desktop\\Q2.txt")) {
 			StringWriter writer = new StringWriter();
 			CmdUtils.ioFlow(new InputStreamReader(input), writer);
-			BufferedImage image = getInstance().decodeImage(writer.toString(), 320, 240);
+			BufferedImage image = getInstance().decodeImage(writer.toString());
 			ImageIO.write(image, "jpg", new File("D:\\desktop\\q2.jpg"));
 			ImageUtils.showImage(image);
 		}

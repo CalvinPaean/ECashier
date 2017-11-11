@@ -19,31 +19,35 @@ def run_register():
     
     # 4.Faces needed to be recognized    
     #show the image you want to test
-    img_path = input()#read from the input stream
-    #img_path = "D:\\FaceRecognition\\Hackathon\\z7.jpg"
+    img_path = input() #read from the input stream
+
+#    img_path = "D:\\FaceRecognition\\Hackathon\\z7.jpg"
     img = mpimg.imread(img_path)
+
+    img.flags['WRITEABLE'] = True
     
     # 1. return a detector that finds human faces that are looking more or less towards the camera.
     detector = dlib.get_frontal_face_detector()
-
-    # 2.return a predictor that takes in an image region containing some object and outputs a set 
-    #of point locations that define the pose of the object.
+#
+#    # 2.return a predictor that takes in an image region containing some object and outputs a set 
+#    #of point locations that define the pose of the object.
     shape_predictor = dlib.shape_predictor(predictor_path)
-    
-    # 3. Loading face recognition model
-    """
-     maps human faces into 128D vectors where pictures of the same person are mapped near 
-     to each other and pictures of different people are mapped far apart. 
-    """
+#    
+#    # 3. Loading face recognition model
+#    """
+#     maps human faces into 128D vectors where pictures of the same person are mapped near 
+#     to each other and pictures of different people are mapped far apart. 
+#    """
     facerec = dlib.face_recognition_model_v1(face_rec_model_path)
-
-    #The glob module finds all the pathnames matching a specified pattern
-    """
-    The 1 in the second argument indicates that we should upsample the image
-    1 time. This will make everything bigger and allow us to detect more
-    faces
-    """
-    #dets:the positions of objects in an image
+#
+#    #The glob module finds all the pathnames matching a specified pattern
+#    """
+#    The 1 in the second argument indicates that we should upsample the image
+#    1 time. This will make everything bigger and allow us to detect more
+#    faces
+#    """
+#    
+#    #dets:the positions of objects in an image
     dets = detector(img, 1)
     #print("Number of faces detected: {}", format(len(dets)))
           
@@ -58,9 +62,7 @@ def run_register():
         v = numpy.array(face_descriptor)  
         # descriptors.append(v)
         for data in v:
-            print(" ", str(data))
-            print(" ")
-        print("\n")
+            print(data)
    
 def run_program():
     
@@ -165,15 +167,23 @@ def run_program():
     cd_sorted = sorted(c_d.items(), key=lambda d:d[1])
     #if the Euclidean distance is > 0.5, the info of that person is not in database
     print("Distance is ", cd_sorted[0][1])
-    if(cd_sorted[0][1]<=0.5):    
-        result_path = './candidate-faces/'+cd_sorted[0][0] + '.jpg'
-        img2 = mpimg.imread(result_path)
-        implot = plt.imshow(img2)
-        plt.show()
-        
-        print ("\n That person is: ",cd_sorted[0][0]) 
-        dlib.hit_enter_to_continue()
+    # if(cd_sorted[0][1]<=0.5):    
+    #     result_path = './candidate-faces/'+cd_sorted[0][0] + '.jpg'
+    #     img2 = mpimg.imread(result_path)
+    #     implot = plt.imshow(img2)
+    #     print ("\n That person is: ",cd_sorted[0][0]) 
+    #     dlib.hit_enter_to_continue()
+    # else:
+    #     print("Sorry! Your info is not in our database.")
+    # end = time.time()
+    # print("Time elapsed: ", end-start)
+
+if __name__ == "__main__":
+    import sys
+    op = sys.argv[1]
+    if op == "1":
+        run_register()
     else:
-        print("Sorry! Your info is not in our database.")
-    end = time.time()
-    print("Time elapsed: ", end-start)
+        run_program()
+    
+

@@ -1,5 +1,6 @@
 package cuny.hackthon.utils;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,8 +8,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CmdUtils {
 
@@ -33,9 +38,9 @@ public final class CmdUtils {
 		Process process = builder.start();
 		process.getOutputStream().flush();
 		process.getOutputStream().close();
+		ioFlow(process.getInputStream(), output);
 		process.waitFor();
 		int retVal = process.exitValue();
-		ioFlow(process.getInputStream(), output);
 		process.destroy();
 		return retVal;
 	}
@@ -49,9 +54,31 @@ public final class CmdUtils {
 		return output.toString();
 	}
 	
+	public static List<BigDecimal> featuresOutput(String features) {
+		List<BigDecimal> result = new ArrayList<>();
+		BufferedReader reader = new BufferedReader(new StringReader(features));
+		String line = null;
+		try {
+			while((line = reader.readLine()) != null) {
+				if(!line.isEmpty()) {
+					result.add(new BigDecimal(line));
+				}
+			}
+		} catch (IOException e) {
+			//swallow io exception
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return result;
+		
+	}
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		
-		System.out.println(windowsShell("echo d:\\hello | python echo.py"));
+		String features1 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
+		String features2 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
+		List<BigDecimal> f1 = featuresOutput(features1);
+		List<BigDecimal> f2 = featuresOutput(features2);
+		System.out.println(MathUtils.euclideanDist(f1, f2));
 	}
 }
