@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
+
 """
 Created on Tue Jun 13 23:24:38 2017
 
-@author: biank
-https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78
 """
 import sys,os,dlib,glob,numpy
 import matplotlib.pyplot as plt
