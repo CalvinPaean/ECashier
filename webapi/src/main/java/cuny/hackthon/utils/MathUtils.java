@@ -6,13 +6,13 @@ import java.util.List;
 public final class MathUtils {
 
 	public static BigDecimal newtonSqrt(BigDecimal val) {
-		int acc = 500;
+		int acc = 200;
 		BigDecimal result = BigDecimal.TEN;
 		BigDecimal TWO = BigDecimal.valueOf(2);
 		while(acc >= 0) {
 			BigDecimal fx = result.pow(2).subtract(val);
 			BigDecimal fprime = TWO.multiply(result);
-			result = fx.divide(fprime, 50, BigDecimal.ROUND_HALF_EVEN);
+			result = result.subtract(fx.divide(fprime, 10, BigDecimal.ROUND_HALF_EVEN));
 			acc--;
 		}
 		return result;
@@ -23,7 +23,7 @@ public final class MathUtils {
 			throw new IllegalArgumentException("vectors dimensions are different");
 		BigDecimal sum = BigDecimal.ZERO;
 		for(int i=0; i<vec1.size(); i++) {
-			sum = sum.add(vec1.get(i).multiply(vec2.get(i)));
+			sum = sum.add(vec1.get(i).subtract((vec2.get(i))).pow(2));
 		}
 		return newtonSqrt(sum);
 	}

@@ -15,7 +15,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class CmdUtils {
+	
+	static final Logger logger = LoggerFactory.getLogger(CmdUtils.class);  
 
 	public static void ioFlow(InputStream input, OutputStream output) throws IOException {
 		byte[] buffer = new byte[1024];
@@ -48,10 +53,31 @@ public final class CmdUtils {
 	public static String windowsShell(String cmd, Object... args) throws IOException, InterruptedException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int exitVal = executeCmd(baos, "cmd", "/c", String.format(cmd, args));
-		if(exitVal != 0) return null;
 		StringWriter output = new StringWriter();
 		ioFlow(new InputStreamReader(new ByteArrayInputStream(baos.toByteArray())), output);
+		if(exitVal != 0) {
+			logger.warn(output.toString());
+			return null;
+		}
 		return output.toString();
+	}
+	
+	public static double[] featureDoubleArray(String features) {
+		List<Double> result = new ArrayList<>();
+		BufferedReader reader = new BufferedReader(new StringReader(features));
+		String line = null;
+		try {
+			while((line = reader.readLine()) != null) {
+				if(!line.isEmpty()) {
+					result.add(Double.parseDouble((line)));
+				}
+			}
+		} catch (IOException e) {
+			//swallow io exception
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return result.stream().mapToDouble(d->(double)d).toArray();
 	}
 	
 	public static List<BigDecimal> featuresOutput(String features) {
@@ -74,11 +100,12 @@ public final class CmdUtils {
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		
-		String features1 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
-		String features2 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
-		List<BigDecimal> f1 = featuresOutput(features1);
+		long start = System.currentTimeMillis();
+//		String features1 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
+		String features2 = windowsShell("echo d:\\desktop\\q2.jpg | anapy face_recog.py 1");
+//		List<BigDecimal> f1 = featuresOutput(features1);
 		List<BigDecimal> f2 = featuresOutput(features2);
-		System.out.println(MathUtils.euclideanDist(f1, f2));
+//		System.out.println(MathUtils.euclideanDist(f1, f2));
+		System.out.printf("it takes %d ms", System.currentTimeMillis()-start);
 	}
 }

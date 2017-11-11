@@ -1,5 +1,6 @@
 package cuny.hackthon.data;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,6 +51,24 @@ public class MockData {
 		CmdUtils.ioFlow(new InputStreamReader(data), writer);
 		int[] result = userDao.batchInsert(writer.toString());
 		System.out.println(Arrays.toString(result));
+	}
+	
+	@Test
+	public void testAddFeature() throws IOException {
+		try(FileInputStream fileIn = new FileInputStream("D:\\desktop\\Q1.txt")) {
+			StringWriter writer = new StringWriter();
+			CmdUtils.ioFlow(new InputStreamReader(fileIn), writer);
+			System.out.println(userDao.addFeature(1, writer.toString()));
+		}
+	}
+	
+	@Test
+	public void testValidFeature() throws IOException {
+		try(FileInputStream fileIn = new FileInputStream("D:\\desktop\\Y1.txt")) {
+			StringWriter writer = new StringWriter();
+			CmdUtils.ioFlow(new InputStreamReader(fileIn), writer);
+			System.out.println(userDao.getUserByFeature(writer.toString()));
+		}
 	}
 	
 	@Test
