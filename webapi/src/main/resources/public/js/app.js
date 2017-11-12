@@ -39,6 +39,8 @@ $(document).ready(function(){
     	    total = 0.0;
             stage.innerText = "Face Scanning";
             face_scan = true;
+            $('.list-group').html("");
+            $('.total').text("$0");
     	}
     });
     
@@ -91,7 +93,7 @@ $(document).ready(function(){
                                     wrapper.append(quantity);
                                     resultSet.append(li);
                                     total += req.unitPrice;
-                                    $('.total').text(`$${total}`);
+                                    $('.total').text(`$${parseFloat(total).toFixed(2)}`);
                                     $('#beep')[0].play();
                             	});
                         	} else {
@@ -100,7 +102,7 @@ $(document).ready(function(){
                         		span.innerText = items[code];
                         		total += unitPrices[code];
                         		$('#beep')[0].play();
-                        		$('.total').text(`$${total}`);
+                        		$('.total').text(`$${parseFloat(total).toFixed(2)}`);
                         	}
                         } else {
                         	alert("No Such Item!");
