@@ -2,7 +2,7 @@ package cuny.hackthon.webapi.controller;
 
 import java.util.HashMap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cuny.hackthon.model.Models.User;
@@ -21,10 +21,18 @@ public class UserController {
 	
 	public static String TakePhoto(Request req, Response resp) {
 		UserDAO userDao = Server.getDAO(UserDAO.class);
-		int id = Integer.parseInt(req.params("id"));
-		String photo = req.params("photo");
-		userDao.takePhoto(id, photo);
-		return "";
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+		resp.type("application/json");
+		try {
+			HashMap<String, Object> map = mapper.readValue(req.body(), typeRef);
+			System.out.println(map);
+			userDao.takePhoto(Integer.parseInt(map.get("id").toString()), map.get("photo").toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{ok:0}";
+		}
+		return "{ok:1}";
 	}
 	
 	public static String VerifyUser(Request req, Response resp) {
@@ -35,7 +43,7 @@ public class UserController {
 		if(user == null) return "{}";
 		try {
 			return new ObjectMapper().writeValueAsString(user);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			return "{}";
 		}
 	}

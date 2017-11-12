@@ -80,10 +80,11 @@ public class UserDAO extends AbstractDAO<User, Integer> {
 			String result = windowsShell(String.format("echo %s | anapy face_recog.py 1", file.getAbsolutePath()));
 			user.setFeature(result);
 			user.setPhoto(photo);
-			String sql = String.format("update %s set feature=? and photo=? where id = ?", getBeanTableName());
+			String sql = String.format("update %s set feature=?, photo=? where id = ?", getBeanTableName());
 			logger.debug("SQL : {}", sql);
-			runner.update(sql, result, photo, id);
+			runner.update(sql, user.getFeature(), photo, id);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}

@@ -25,7 +25,7 @@ public class ProductController {
 		if(product == null) return "{}";
 		try {
 			return new ObjectMapper().writeValueAsString(product);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			return "{}";
 		}
 	}

@@ -4,10 +4,12 @@ block title
 	title Take Photo
 
 block content
-	script(src="../js/instascan.min.js")
-	video#preview(autoplay="autoplay")
-	canvas#buffer(style="display:none;")
+	script(src="/js/instascan.min.js")
+	script(src="/js/jquery-3.2.1.js")
+	video#preview(autoplay="autoplay" width="320" height="240")
+	canvas#buffer(style="display:none;" width="320" height="240")
 	.div
+		input(id="_id" name="id")
 		button Smile
 	script.
 		var preview = document.querySelector("#preview");
@@ -21,4 +23,20 @@ block content
 		}).catch(function(err){
 		    console.error(err);
 		});
+		var btn = $('button');
+		btn.on('click', function(){
+			var buffer = document.querySelector('#buffer');
+			var g = buffer.getContext('2d');
+			g.drawImage(preview, 0, 0, 320, 240);
+			var dataUrl = buffer.toDataURL('image/webp');
+			var _id = $('#_id').val();
+			var data = {id : _id, photo: dataUrl};
+			$.ajax({
+				url : '/takephoto/',
+				type: 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(data)	
+			});
+		});
+		
 		

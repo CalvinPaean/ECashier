@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	var trackTask;
+	var face_scan = true;
     var preview = document.getElementById('preview');
     var faceObj = new tracking.ObjectTracker(['face']);
     var loading = document.querySelector(".loading");
@@ -7,10 +8,12 @@ $(document).ready(function(){
     var trackerCanvas = document.getElementById('facetracker');
     var resultSet = document.querySelector(".item-list ul");
     var items = {};
+    var unitPrices = {};
+    var total = 0.0;
     var itemCodeReg = /\/(\d+)$/;
     var captureCanvas = document.getElementById('image_capture');
     var w = preview.clientWidth, h = preview.clientHeight;
-    
+    var scanner;
     trackerCanvas.width = w;
     trackerCanvas.height = h;
     captureCanvas.width = w;
@@ -22,6 +25,18 @@ $(document).ready(function(){
     var delayCtx = { timerId: -1, cnt : initDelay };
     var defaultCamera;
 
+    $('#pay-btn').on('click', function(){
+    	if(!face_scan) {
+    		face_scan = true;
+    		trackTask.run();
+    	    items = {};
+    	    unitPrices = {};
+    	    total = 0.0;
+            stage.innerText = "Face Scanning";
+            face_scan = true;
+    	}
+    });
+    
     var delayFunc = function(ctx) {
         return function() {
             if(!ctx || ctx.timerId === -1) return;
@@ -35,51 +50,57 @@ $(document).ready(function(){
                 if(trackTask) { 
                     trackerCtx.clearRect(0, 0, trackerCanvas.width, trackerCanvas.height);
                     trackTask.stop();
+                    face_scan = false;
                 }
                 ctx.timerId = -1;
                 ctx.cnt = initDelay;
-                var scanner = new Instascan.Scanner({
-                    video: preview,
-                    scanPeriod: 1,
-                    mirror : false
-                });
-                scanner.addListener('scan', function(content, image){
+                if(!scanner) {
+                	scanner = new Instascan.Scanner({
+                        video: preview,
+                        scanPeriod: 1,
+                        mirror : false
+                    });
+                    scanner.addListener('scan', function(content, image){
 
-                    var code = content.match(itemCodeReg)[1];
-                    if(code) {
-                    	
-                    	if(!items[code]) {
-                        	$.get(`/item/${code}`, function(req){
-                                var li = document.createElement("li");
-                                li.classList.add("list-group-item");
-                                li.setAttribute("data-code", code);
-                                items[code] = 1;
-                                var itemDiv = document.createElement("div");
-                                itemDiv.classList.add("item");
-                                li.append(itemDiv);
-                                var text = document.createElement("span");
-                                var quantity = document.createElement("span");
-                                var wrapper = document.createElement("span");
-                                wrapper.classList.add("item-quantity");
-                                wrapper.innerText = "X";
-                                quantity.innerText = "1";
-                            	text.innerText = `${req.name}($${req.unitPrice})`;
-                                itemDiv.append(text);
-                                itemDiv.append(wrapper);
-                                wrapper.append(quantity);
-                                resultSet.append(li);
-                        	});
-                    	} else {
-                    		var span = document.querySelector(`[data-code="${code}"] .item-quantity > span`);
-                    		items[code] += 1;
-                    		span.innerText = items[code];
-                    	}
-                    } else {
-                    	alert("No Such Item!");
-                    }
-                    
-                });
-//                 request api to recoginize face
+                        var code = content.match(itemCodeReg)[1];
+                        if(code) {
+                        	if(!items[code]) {
+                            	$.get(`/item/${code}`, function(req){
+                                    var li = document.createElement("li");
+                                    li.classList.add("list-group-item");
+                                    li.setAttribute("data-code", code);
+                                    items[code] = 1;
+                                    unitPrices[code] = req.unitPrice;
+                                    var itemDiv = document.createElement("div");
+                                    itemDiv.classList.add("item");
+                                    li.append(itemDiv);
+                                    var text = document.createElement("span");
+                                    var quantity = document.createElement("span");
+                                    var wrapper = document.createElement("span");
+                                    wrapper.classList.add("item-quantity");
+                                    wrapper.innerText = "X";
+                                    quantity.innerText = "1";
+                                	text.innerText = `${req.name}($${req.unitPrice})`;
+                                    itemDiv.append(text);
+                                    itemDiv.append(wrapper);
+                                    wrapper.append(quantity);
+                                    resultSet.append(li);
+                                    total += req.unitPrice;
+                                    $('.total').text(`$${total}`);
+                            	});
+                        	} else {
+                        		var span = document.querySelector(`[data-code="${code}"] .item-quantity > span`);
+                        		items[code] += 1;
+                        		span.innerText = items[code];
+                        		total += unitPrices[code];
+                        		$('.total').text(`$${total}`);
+                        	}
+                        } else {
+                        	alert("No Such Item!");
+                        }                        
+                    });
+                }
+                //                 request api to recoginize face
                 stage.innerText = "Recoginizing...";
                 captureCtx.drawImage(preview, 0, 0, w, h);
                 var dataUrl = captureCanvas.toDataURL('image/webp'); 
@@ -93,6 +114,7 @@ $(document).ready(function(){
                     		stage.innerText = "QR Code Scanning";
                     		$('h4.card-title').text(usr.name);
                     		$('.card-text').text('Prime');
+                    		$('.user-card img')[0].src = usr.photo;
                             scanner.start(defaultCamera);
                 		} else {
 //                			alert('you are not in database');
@@ -102,6 +124,12 @@ $(document).ready(function(){
                             trackTask.run();
                 		}
                 		loading.classList.replace('show','hide');
+                	},
+                	fail : function(err, usr) {
+            			stage.innerText = "Face Scanning";
+            			ctx.timerId = -1;
+                        ctx.cnt = initDelay;
+                        trackTask.run();                		
                 	}
                 });
                 
