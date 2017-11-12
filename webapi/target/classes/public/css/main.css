@@ -105,8 +105,14 @@ body, html {
 	position: absolute;
 	min-height: 100%;
 	min-width: 100%;
+	background-size: cover;
 }
 #image_capture {
+	display: none;
+	min-height: 100%;
+	min-width: 100%;
+}
+#livesteram {
 	display: none;
 	min-height: 100%;
 	min-width: 100%;

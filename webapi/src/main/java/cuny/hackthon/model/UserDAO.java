@@ -54,6 +54,7 @@ public class UserDAO extends AbstractDAO<User, Integer> {
 			File file = File.createTempFile("___fea", "ture__");
 			ImageIO.write(decoded, "jpg", file);
 			String result = windowsShell(String.format("echo %s | anapy face_recog.py 1", file.getAbsolutePath()));
+			if(result.length() == 0) return null;
 			List<User> features = getFeatures();
 			List<BigDecimal> target = CmdUtils.featuresOutput(result);
 			BigDecimal threshold = new BigDecimal("0.42");

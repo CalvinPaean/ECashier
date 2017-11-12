@@ -12,15 +12,20 @@ $(document).ready(function(){
     var total = 0.0;
     var itemCodeReg = /\/(\d+)$/;
     var captureCanvas = document.getElementById('image_capture');
+    var livestreamCanvas = document.getElementById('livestream');
     var w = preview.clientWidth, h = preview.clientHeight;
     var scanner;
     trackerCanvas.width = w;
     trackerCanvas.height = h;
     captureCanvas.width = w;
     captureCanvas.height = h;
+    livestreamCanvas.width = w;
+    livestreamCanvas.height = h;
 
     var trackerCtx = trackerCanvas.getContext('2d');
     var captureCtx = captureCanvas.getContext('2d');
+    var liveCtx = livestreamCanvas.getContext('2d');
+    
     var initDelay = 3;
     var delayCtx = { timerId: -1, cnt : initDelay };
     var defaultCamera;
@@ -61,9 +66,9 @@ $(document).ready(function(){
                         mirror : false
                     });
                     scanner.addListener('scan', function(content, image){
-
-                        var code = content.match(itemCodeReg)[1];
-                        if(code) {
+                        var code = content.match(itemCodeReg);
+                        if(code && code[1]) {
+                        	code = code[1];
                         	if(!items[code]) {
                             	$.get(`/item/${code}`, function(req){
                                     var li = document.createElement("li");
@@ -87,12 +92,14 @@ $(document).ready(function(){
                                     resultSet.append(li);
                                     total += req.unitPrice;
                                     $('.total').text(`$${total}`);
+                                    $('#beep')[0].play();
                             	});
                         	} else {
                         		var span = document.querySelector(`[data-code="${code}"] .item-quantity > span`);
                         		items[code] += 1;
                         		span.innerText = items[code];
                         		total += unitPrices[code];
+                        		$('#beep')[0].play();
                         		$('.total').text(`$${total}`);
                         	}
                         } else {
@@ -183,4 +190,24 @@ $(document).ready(function(){
     }).catch(function(err){
         console.error(err);
     });
+    
+    var wsHost = "ws://" + location.host + "/livestream";
+	var ws = new WebSocket(wsHost);
+	ws.onopen = function() {
+		console.log("connected.");
+	    requestAnimationFrame(function step(ts){
+	    	liveCtx.drawImage(preview, 0, 0, w, h);
+	    	var message = livestreamCanvas.toDataURL("image/webp");
+	    	ws.send(message);
+	    	requestAnimationFrame(step);
+	    });
+	}
+	ws.onmessage = function() {
+		//ignore
+	}
+	ws.onerror = function(err) {
+		console.log("ws err: " + err);
+		console.dir(err);
+	}
+
 });

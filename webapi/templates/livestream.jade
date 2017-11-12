@@ -1,0 +1,33 @@
+extends base
+append styles
+	link(rel="stylesheet" href="/css/main.css")
+block title
+	title Live Stream
+
+block content
+	img#client.show(style="border:1px solid" width="320", height="240")
+
+	script(src="/js/jquery-3.2.1.js")
+	script.
+		var wsHost = "ws://" + location.host;
+		var ws = new WebSocket(wsHost+"/livestream");
+		var img = $('#client')[0];
+		ws.onmessage = function(msg) {
+			if(msg.data) {
+				console.log(123);
+				if(msg.data[0] == 'd' && msg.data[1] == 'a') {
+					img.src = msg.data;
+				}
+			}
+			
+		} 
+		ws.onopen = function() {
+			console.log("Hello");
+		}
+		
+		ws.onerror = function(err) {
+			console.log("Ws error: " + err);
+			console.dir(err);
+		}
+		
+	

@@ -26,13 +26,14 @@ public class UserController {
 		resp.type("application/json");
 		try {
 			HashMap<String, Object> map = mapper.readValue(req.body(), typeRef);
-			System.out.println(map);
 			userDao.takePhoto(Integer.parseInt(map.get("id").toString()), map.get("photo").toString());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "{ok:0}";
+			return "{\"ok\":0}";
 		}
-		return "{ok:1}";
+		System.out.println("HERE!");
+		return "{\"ok\":1}";
 	}
 	
 	public static String VerifyUser(Request req, Response resp) {

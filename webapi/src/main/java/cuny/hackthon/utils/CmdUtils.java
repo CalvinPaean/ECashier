@@ -1,8 +1,10 @@
 package cuny.hackthon.utils;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +16,8 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,10 +105,13 @@ public final class CmdUtils {
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		long start = System.currentTimeMillis();
+		
+
 //		String features1 = windowsShell("echo d:\\desktop\\q1.jpg | anapy face_recog.py 1");
-		String features2 = windowsShell("echo d:\\desktop\\q2.jpg | anapy face_recog.py 1");
+		String features2 = windowsShell("echo d:\\desktop\\img_avatar1.jpg | anapy face_recog.py 1");
+		System.out.println(features2.length());
 //		List<BigDecimal> f1 = featuresOutput(features1);
-		List<BigDecimal> f2 = featuresOutput(features2);
+//		List<BigDecimal> f2 = featuresOutput(features2);
 //		System.out.println(MathUtils.euclideanDist(f1, f2));
 		System.out.printf("it takes %d ms", System.currentTimeMillis()-start);
 	}
