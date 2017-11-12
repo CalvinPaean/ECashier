@@ -82,6 +82,9 @@ public class Models {
 		
 		private String feature;
 		
+		@Column
+		private String photo;
+		
 		@Override
 		public Integer getId() {
 			return id;
@@ -119,6 +122,14 @@ public class Models {
 		}
 		public void setStatus(int status) {
 			this.status = status;
+		}
+		
+		public String getPhoto() {
+			return photo;
+		}
+		
+		public void setPhoto(String photo) {
+			this.photo = photo;
 		}
 		
 		@Override

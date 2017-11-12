@@ -6,13 +6,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import cuny.hackthon.model.Models.User;
@@ -71,6 +69,23 @@ public class UserDAO extends AbstractDAO<User, Integer> {
 			throw new RuntimeException(e);
 		}
 		return null;
+	}
+	
+	public void takePhoto(int id, String photo) {
+		User user = findOne(id);
+		BufferedImage decoded = WebpJNI.getInstance().decodeImage(photo, 320, 240);
+		try {
+			File file = File.createTempFile("__pho", "too__");
+			ImageIO.write(decoded, "jpg", file);
+			String result = windowsShell(String.format("echo %s | anapy face_recog.py 1", file.getAbsolutePath()));
+			user.setFeature(result);
+			user.setPhoto(photo);
+			String sql = String.format("update %s set feature=? and photo=? where id = ?", getBeanTableName());
+			logger.debug("SQL : {}", sql);
+			runner.update(sql, result, photo, id);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 }

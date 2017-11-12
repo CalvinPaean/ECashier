@@ -7,6 +7,7 @@ create table user_t(
 	balance double not null,
 	lastModify bigint not null,
 	status int not null default 0,
+	photo text null,
 	feature text null
 );
 

@@ -14,6 +14,7 @@ body, html {
 	flex-grow: 1;
 	background-color: white;
 }
+
 .logo {
 	background: url("../image/logo1.png") no-repeat;
 	background-size: 30%;
@@ -40,7 +41,6 @@ body, html {
 	background-color: white;
 	flex-grow: 1;
 	position: relative;
-	border: 1px solid green;
 }
 
 .camera-wrapper {
@@ -114,7 +114,6 @@ body, html {
 .btns {
 	position: absolute;
 	height: auto;
-	border: 1px solid;
 	width: 100%;
 	text-align: center;
 	bottom: 10%;
@@ -141,7 +140,6 @@ button:focus {
 	width: 30vw;
 	flex-grow: 1;
 	position: relative;
-	border: 1px solid red;
 }
 .item-preview {
 	

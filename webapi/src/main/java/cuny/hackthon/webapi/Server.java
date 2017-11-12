@@ -15,12 +15,14 @@ import org.slf4j.LoggerFactory;
 import cuny.hackthon.datautils.Db;
 import cuny.hackthon.model.AbstractDAO;
 import cuny.hackthon.model.JournalDAO;
+import cuny.hackthon.model.Models.User;
 import cuny.hackthon.model.OrderProductDAO;
 import cuny.hackthon.model.ProductDAO;
 import cuny.hackthon.model.UserDAO;
 import cuny.hackthon.webapi.controller.IndexController;
 import cuny.hackthon.webapi.controller.ProductController;
 import cuny.hackthon.webapi.controller.UserController;
+import freemarker.cache.WebappTemplateLoader;
 import spark.Service;
 import spark.Spark;
 import spark.debug.DebugScreen;
@@ -74,7 +76,9 @@ public class Server {
 		get(WebAPI.Path.index, IndexController::WelcomePage);
 		get(WebAPI.Path.SHOW_QRCODE, ProductController::ShowQRCode);
 		get(WebAPI.Path.SHOW_ONE_ITEM, ProductController::FetchItem);
-		get(WebAPI.AuthPath.VERIFY_USER, UserController::VerifyUser);
+		get(WebAPI.Path.TAKE_PHOTO, UserController::ViewPhoto);
+		post(WebAPI.Path.TAKE_PHOTO, UserController::TakePhoto);
+		put(WebAPI.AuthPath.VERIFY_USER, UserController::VerifyUser);
 		post(WebAPI.AuthPath.newUser, UserController::NewUser);
 		Spark.after("*", (req, res)->{
 			res.header("Content-Encoding", "gzip");

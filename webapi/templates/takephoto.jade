@@ -1,0 +1,24 @@
+extends base
+
+block title 
+	title Take Photo
+
+block content
+	script(src="../js/instascan.min.js")
+	video#preview(autoplay="autoplay")
+	canvas#buffer(style="display:none;")
+	.div
+		button Smile
+	script.
+		var preview = document.querySelector("#preview");
+		Instascan.Camera.getCameras().then(function(cameras){
+		    if(cameras.length > 0) {
+		        defaultCamera = cameras[0];
+		        defaultCamera.start().then(function(stream){
+		            preview.srcObject = stream;
+		        });
+		    }
+		}).catch(function(err){
+		    console.error(err);
+		});
+		

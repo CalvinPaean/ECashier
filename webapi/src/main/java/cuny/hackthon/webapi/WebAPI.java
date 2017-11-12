@@ -13,6 +13,7 @@ public final class WebAPI {
 		public static final String fetchAllItems = "/product/";
 		public static final String newItem = "/product/";
 		public static final String modifyItem = "/product/";
+		public static final String TAKE_PHOTO = "/takephoto/";
 	}
 	
 	public final static class AuthPath {

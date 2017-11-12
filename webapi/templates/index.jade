@@ -15,14 +15,14 @@ block content
 				.user-card.card
 					img.card-img-top(src="image/img_avatar1.png" alt="User Avatar")
 					.card-body
-						h4.card-title User Name
-						p.card-text Class of User
+						h4.card-title &nbsp;
+						p.card-text &nbsp;
 			.column2.none-select
 				.camera-wrapper.none-select
 					.loading.hide
 						img(src="image/loading.gif" width="50px" height="50px" )
 					video#preview.camera.none-select(autoplay="autoplay")
-					.stage Face Scan
+					.stage Face Scanning
 					.overlay
 					canvas#facetracker.overlap
 					canvas#image_capture.capture
@@ -35,7 +35,8 @@ block content
 					ul.list-group
 
 				.item-total
-					h3 Your Total: 
+					h3 Your Total:
+					span.total &nbsp; 
 				
 append scripts
 	script(src="js/trackjs/tracking-min.js")

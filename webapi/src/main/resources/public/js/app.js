@@ -10,6 +10,7 @@ $(document).ready(function(){
     var itemCodeReg = /\/(\d+)$/;
     var captureCanvas = document.getElementById('image_capture');
     var w = preview.clientWidth, h = preview.clientHeight;
+    
     trackerCanvas.width = w;
     trackerCanvas.height = h;
     captureCanvas.width = w;
@@ -80,12 +81,29 @@ $(document).ready(function(){
                 });
 //                 request api to recoginize face
                 stage.innerText = "Recoginizing...";
+                captureCtx.drawImage(preview, 0, 0, w, h);
+                var dataUrl = captureCanvas.toDataURL('image/webp'); 
                 loading.classList.replace('hide','show');
-                setTimeout(function(){
-                    stage.innerText = "QR Code Scanning";
-                    scanner.start(defaultCamera);
-                    loading.classList.replace('show','hide');
-                }, 2000);
+                $.ajax({
+                	url : '/auth/user/',
+                	type : 'PUT',
+                	data : dataUrl,
+                	success : function(usr) {
+                		if(usr.id) {
+                    		stage.innerText = "QR Code Scanning";
+                    		$('h4.card-title').text(usr.name);
+                    		$('.card-text').text('Prime');
+                            scanner.start(defaultCamera);
+                		} else {
+//                			alert('you are not in database');
+                			stage.innerText = "Face Scanning";
+                			ctx.timerId = -1;
+                            ctx.cnt = initDelay;
+                            trackTask.run();
+                		}
+                		loading.classList.replace('show','hide');
+                	}
+                });
                 
             } else {
                 ctx.timerId = setTimeout(delayFunc(ctx), 1000);
@@ -129,10 +147,6 @@ $(document).ready(function(){
 
     Instascan.Camera.getCameras().then(function(cameras){
         if(cameras.length > 0) {
-        	for(var i=0; i<cameras.length; i++) {
-        		var cam = cameras[i];
-        		console.log(cam);
-        	}
             defaultCamera = cameras[0];
             defaultCamera.start().then(function(stream){
                 preview.srcObject = stream;

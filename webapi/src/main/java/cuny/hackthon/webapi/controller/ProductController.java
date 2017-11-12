@@ -36,8 +36,10 @@ public class ProductController {
 		Map<Integer, String> map = dao.fectchQrCode(Arrays.stream(values).mapToInt(s->Integer.parseInt(s)).toArray());
 		String imgTemplate = "<img alt=\"item %d's qrcode\" src=\"%s\"/>";
 		StringBuilder builder = new StringBuilder();
+		int i = 0;
 		for(Integer key : map.keySet()) {
 			builder.append(String.format(imgTemplate, key, map.get(key)));
+			if(++i == 3) builder.append("<br/>");
 		}
 		return builder.toString();
 	}
